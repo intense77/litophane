@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import subprocess, os, uuid
 from werkzeug.utils import secure_filename
 
@@ -38,3 +38,13 @@ def generate():
         if os.path.exists(img_path): os.remove(img_path) # Löschen nach Erfolg oder Fehler
         
     return jsonify({"id": user_id, "status": "In Schlange"})
+
+@app.route('/outputs/<filename>')
+def download_file(filename):
+    return send_from_directory("outputs", filename, as_attachment=True)
+
+@app.route('/admin', strict_slashes=False)
+def admin():
+    files = [f for f in os.listdir("outputs") if f.endswith('.stl')]
+    links = "".join([f'<li><a href="/outputs/{f}">{f}</a></li>' for f in files])
+    return f"<h1>Fertige Dia-Inlays</h1><ul>{links}</ul><p><a href='/'>Zurück zur Fotobox</a></p>"
