@@ -2,11 +2,16 @@ from flask import Flask, request, jsonify
 import subprocess, os, uuid
 from werkzeug.utils import secure_filename
 
-app = Flask(__name__)
+# Konfiguriere Flask so, dass statische Dateien direkt aus dem 'static'-Ordner ausgeliefert werden
+app = Flask(__name__, static_url_path='', static_folder='static')
 
 # Sicherstellen, dass die Zielordner existieren
 os.makedirs("uploads", exist_ok=True)
 os.makedirs("outputs", exist_ok=True)
+
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
 
 @app.route('/generate', methods=['POST'])
 def generate():
