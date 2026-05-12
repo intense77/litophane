@@ -31,8 +31,10 @@ def generate():
         img = ImageOps.exif_transpose(img)
         img = img.convert('L')
         
-        # Auf 100x100 reduziert, um RAM-Abstürze auf dem Server zu verhindern!
-        img.thumbnail((100, 100)) 
+        # Bild exakt quadratisch zuschneiden, damit das Gesicht nicht verzerrt wird
+        img = ImageOps.fit(img, (100, 100), centering=(0.5, 0.5))
+        # Vertikal spiegeln, da OpenSCAD das Bild sonst auf dem Kopf einliest
+        img = ImageOps.flip(img)
         img.save(img_path, format="PNG")
         print(f"[{user_id}] Bild für den 3D-Druck gespeichert.", flush=True)
     else:

@@ -12,15 +12,18 @@ scale_xy = 0.42;
 
 union() {
     // 1. Grundboden (die absolut flache Trägerschicht für das Druckbett)
-    translate([0, 0, base_th / 2])
-    cube([inlay_size, inlay_size, base_th], center = true);
+    // Von Z=0 bis base_th, exakt flach aufliegend
+    translate([-inlay_size/2, -inlay_size/2, 0])
+    cube([inlay_size, inlay_size, base_th]);
 
     // 2. Das eigentliche Lithophane (Bild-Relief)
     translate([0, 0, base_th]) 
     // WICHTIG: surface() generiert Höhen bis 100. Daher: thickness / 100
-    scale([scale_xy, scale_xy, thickness / 100]) {
-        surface(file = image_file, center = true, invert = true);
-    }
+    scale([scale_xy, scale_xy, thickness / 100])
+    // center=false sorgt dafür, dass das Relief exakt bei Z=0 startet und nur nach OBEN wächst.
+    // Da das Bild 100x100 px ist, zentrieren wir es manuell um -50 auf X und Y.
+    translate([-50, -50, 0])
+    surface(file = image_file, center = false, invert = true);
     
     // 3. Die User-ID am oberen Rand (wird später vom Rahmen-Schlitz verdeckt)
     // Bei 42mm Inlay und 38mm Fenster verschwinden exakt 2mm Rand im Rahmen.
