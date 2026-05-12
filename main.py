@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory
 import subprocess, os, uuid
 from werkzeug.utils import secure_filename
+from PIL import Image, ImageOps
 
 # Konfiguriere Flask so, dass statische Dateien direkt aus dem 'static'-Ordner ausgeliefert werden
 app = Flask(__name__, static_url_path='', static_folder='static')
@@ -24,7 +25,12 @@ def generate():
     
     img_path = f"uploads/{user_id}.png"
     if 'image' in request.files:
-        request.files['image'].save(img_path)
+        # Bild laden, richtig drehen, in Graustufen umwandeln und verkleinern
+        img = Image.open(request.files['image'])
+        img = ImageOps.exif_transpose(img)
+        img = img.convert('L')
+        img.thumbnail((250, 250)) # Begrenzt die Bildgröße für OpenSCAD Performance
+        img.save(img_path, format="PNG")
     
     stl_path = f"outputs/{user_id}_{val}.stl"
     
