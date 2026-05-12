@@ -24,14 +24,17 @@ union() {
     cube([max_width, max_width, base_th], center = true);
 
     // 3. Äußerer Dia-Rahmen (z.B. 50x50 mm)
-    translate([0, 0, (base_th + thickness) / 2])
+    // Wir machen den Rahmen extra etwas höher (z.B. 4.0 mm), 
+    // damit das Bild nicht bündig abschließt und wie eine Platte wirkt!
+    frame_th = base_th + thickness + 1.0; 
+    translate([0, 0, frame_th / 2])
     difference() {
-        cube([50, 50, base_th + thickness], center = true);
-        cube([max_width, max_width, base_th + thickness + 1], center = true);
+        cube([50, 50, frame_th], center = true);
+        cube([max_width, max_width, frame_th + 1], center = true);
     }
 
     // 4. Die User-ID auf den Rahmen prägen
-    translate([0, -22, base_th + thickness - 0.5]) {
+    translate([0, -22, frame_th - 0.5]) {
         linear_extrude(1) {
             text(text_id, size=4, halign="center", valign="center");
         }
