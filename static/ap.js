@@ -81,13 +81,43 @@ document.addEventListener('DOMContentLoaded', () => {
     photoInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (file) {
-            currentBlob = file;
-            if (currentImageSrc) URL.revokeObjectURL(currentImageSrc);
-            currentImageSrc = URL.createObjectURL(file);
-            
-            // 3D Vorschau aktualisieren und Senden-Button aktivieren
-            init3DPreview(currentImageSrc);
-            uploadBtn.disabled = false;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 500; // Maximale Kantenlänge für schnellen Upload
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Seitenverhältnis berechnen und Bild verkleinern
+                    if (width > height && width > MAX_SIZE) {
+                        height *= MAX_SIZE / width;
+                        width = MAX_SIZE;
+                    } else if (height > MAX_SIZE) {
+                        width *= MAX_SIZE / height;
+                        height = MAX_SIZE;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Bild als komprimiertes JPEG (Qualität: 80%) erzeugen
+                    canvas.toBlob((blob) => {
+                        currentBlob = blob;
+                        if (currentImageSrc) URL.revokeObjectURL(currentImageSrc);
+                        currentImageSrc = URL.createObjectURL(blob);
+                        
+                        // 3D Vorschau aktualisieren und Senden-Button aktivieren
+                        init3DPreview(currentImageSrc);
+                        uploadBtn.disabled = false;
+                    }, 'image/jpeg', 0.8);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
     });
     
