@@ -40,17 +40,33 @@ async function uploadPhoto(blob, imageSrc) {
     formData.append('id', userId);
     formData.append('value', document.getElementById('value-select').value);
 
-    const response = await fetch('/generate', { method: 'POST', body: formData });
-    const result = await response.json();
-    
-    // UI Update: HTML-Status anzeigen und anpassen
-    document.getElementById('status-display').classList.remove('hidden');
-    document.getElementById('user-id-display').innerText = result.id;
-    document.getElementById('queue-info').innerText = 'Dein Dia ist in Arbeit und wird bald gedruckt!';
-    if (typeof updateQueueTime === 'function') updateQueueTime();
-    
-    // Lokale Daten "vergessen" (Browser-Cache)
-    if (imageSrc) URL.revokeObjectURL(imageSrc); 
+    try {
+        const response = await fetch('/generate', { method: 'POST', body: formData });
+        
+        if (!response.ok) {
+            throw new Error(`Server meldet Fehlercode ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        // UI Update: HTML-Status anzeigen und anpassen
+        document.getElementById('status-display').classList.remove('hidden');
+        document.getElementById('user-id-display').innerText = result.id;
+        document.getElementById('queue-info').innerText = 'Dein Dia ist in Arbeit und wird bald gedruckt!';
+        if (typeof updateQueueTime === 'function') updateQueueTime();
+        
+    } catch (error) {
+        console.error("Upload-Fehler:", error);
+        alert("Es gab ein Problem beim Generieren des Dias. Überprüfe die Server-Logs in Coolify!");
+    } finally {
+        // Button nach Erfolg oder Fehler wieder zurücksetzen
+        const uploadBtn = document.getElementById('upload-btn');
+        uploadBtn.innerText = "An Drucker senden";
+        uploadBtn.disabled = false;
+
+        // Lokale Daten "vergessen" (Browser-Cache)
+        if (imageSrc) URL.revokeObjectURL(imageSrc); 
+    }
 }
 
 // --- Event Listeners für Smartphone Workflow ---

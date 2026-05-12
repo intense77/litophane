@@ -30,7 +30,10 @@ def generate():
     
     try:
         # OpenSCAD Aufruf für das Dia-Inlay (check=True wirft Fehler bei Fehlschlag)
-        subprocess.run(["openscad", "-o", stl_path, "-D", f'image_file="{img_path}"', "-D", f'text_id="{user_id}"', "litho_generator.scad"], check=True)
+        subprocess.run(["openscad", "-o", stl_path, "-D", f'image_file="{img_path}"', "-D", f'text_id="{user_id}"', "litho_generator.scad"], capture_output=True, text=True, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"OpenSCAD Fehler:\n{e.stderr}", flush=True) # Der Fehler wird in die Coolify-Logs geschrieben
+        return jsonify({"error": "OpenSCAD Rendering fehlgeschlagen"}), 500
     finally:
         if os.path.exists(img_path): os.remove(img_path) # Löschen nach Erfolg oder Fehler
         
