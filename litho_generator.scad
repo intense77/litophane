@@ -7,8 +7,8 @@ max_width = 40;  // Breite des Bildes in mm
 thickness = 2.5; // Maximale Dicke des Reliefs (schwarze Stellen)
 base_th = 0.5;   // Grunddicke, damit weiße Stellen keine Löcher werden
 
-// Da Python das Bild auf max 250px verkleinert: 250 * 0.16 = 40mm
-scale_xy = 0.16;
+// Da Python das Bild auf max 100px verkleinert: 100 * 0.40 = 40mm
+scale_xy = 0.40;
 
 union() {
     // 1. Das eigentliche Lithophane

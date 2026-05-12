@@ -36,7 +36,8 @@ function init3DPreview(imageSrc) {
 // Upload & Datensparsamkeit
 async function uploadPhoto(blob, imageSrc) {
     const formData = new FormData();
-    formData.append('image', blob);
+    // Einen Dateinamen (photo.jpg) mitgeben, damit der Server es sicher als Datei erkennt
+    formData.append('image', blob, 'photo.jpg');
     formData.append('id', userId);
     formData.append('value', document.getElementById('value-select').value);
 

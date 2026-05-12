@@ -25,20 +25,28 @@ def generate():
     
     img_path = f"uploads/{user_id}.png"
     if 'image' in request.files:
+        print(f"[{user_id}] Bild empfangen, verarbeite...", flush=True)
         # Bild laden, richtig drehen, in Graustufen umwandeln und verkleinern
         img = Image.open(request.files['image'])
         img = ImageOps.exif_transpose(img)
         img = img.convert('L')
-        img.thumbnail((250, 250)) # Begrenzt die Bildgröße für OpenSCAD Performance
+        
+        # Auf 100x100 reduziert, um RAM-Abstürze auf dem Server zu verhindern!
+        img.thumbnail((100, 100)) 
         img.save(img_path, format="PNG")
+        print(f"[{user_id}] Bild für den 3D-Druck gespeichert.", flush=True)
+    else:
+        print(f"[{user_id}] FEHLER: Kein Bild hochgeladen!", flush=True)
     
     stl_path = f"outputs/{user_id}_{val}.stl"
     
     try:
+        print(f"[{user_id}] Starte OpenSCAD Rendering...", flush=True)
         # OpenSCAD Aufruf für das Dia-Inlay (check=True wirft Fehler bei Fehlschlag)
         subprocess.run(["openscad", "-o", stl_path, "-D", f'image_file="{img_path}"', "-D", f'text_id="{user_id}"', "litho_generator.scad"], capture_output=True, text=True, check=True)
+        print(f"[{user_id}] 3D-Modell erfolgreich generiert: {stl_path}", flush=True)
     except subprocess.CalledProcessError as e:
-        print(f"OpenSCAD Fehler:\n{e.stderr}", flush=True) # Der Fehler wird in die Coolify-Logs geschrieben
+        print(f"[{user_id}] OpenSCAD Fehler:\n{e.stderr}", flush=True)
         return jsonify({"error": "OpenSCAD Rendering fehlgeschlagen"}), 500
     finally:
         if os.path.exists(img_path): os.remove(img_path) # Löschen nach Erfolg oder Fehler
