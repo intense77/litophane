@@ -14,14 +14,17 @@ union() {
     // 1. Das eigentliche Lithophane
     // invert=true macht dunkle Pixel dick (lichtundurchlässig) und helle dünn
     translate([0, 0, base_th]) 
-    scale([scale_xy, scale_xy, thickness]) {
+    // WICHTIG: surface() generiert Höhen bis 100. Daher: thickness / 100
+    scale([scale_xy, scale_xy, thickness / 100]) {
         surface(file = image_file, center = true, invert = true);
     }
     
     // 2. Grundboden (die Trägerschicht)
+    translate([0, 0, base_th / 2])
     cube([max_width, max_width, base_th], center = true);
 
     // 3. Äußerer Dia-Rahmen (z.B. 50x50 mm)
+    translate([0, 0, (base_th + thickness) / 2])
     difference() {
         cube([50, 50, base_th + thickness], center = true);
         cube([max_width, max_width, base_th + thickness + 1], center = true);
