@@ -1,0 +1,54 @@
+:root {
+    --bg-color: #1a1a1a;
+    --card-color: #2d2d2d;
+    --accent-color: #ffffff;
+    --text-color: #e0e0e0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    text-align: center;
+}
+
+#preview-container {
+    width: 300px;
+    height: 300px;
+    margin: 20px auto;
+    background: #000;
+    border: 10px solid #333; /* Simulierter Dia-Rahmen */
+    border-bottom-width: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+button, select {
+    padding: 15px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.btn-primary { background: #444; color: white; }
+.btn-send { background: #28a745; color: white; font-weight: bold; }
+.btn-send:disabled { background: #555; opacity: 0.5; }
+
+.hidden { display: none; }

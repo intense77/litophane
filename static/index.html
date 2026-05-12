@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dia-Generator | Medienzentrale</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Dia-Konfigurator</h1>
+            <p class="subtitle">Katholikentag 2026</p>
+        </header>
+
+        <main>
+            <div id="preview-container">
+                <!-- Hier erscheint die Three.js 3D-Vorschau -->
+            </div>
+
+            <div class="controls">
+                <input type="file" id="photo-input" accept="image/*" capture="camera" hidden>
+                <button onclick="document.getElementById('photo-input').click()" class="btn-primary">Foto aufnehmen</button>
+                
+                <select id="value-select">
+                    <option value="Frieden">Frieden</option>
+                    <option value="Segen">Segen</option>
+                    <option value="Hoffnung">Hoffnung</option>
+                    <option value="Gerechtigkeit">Gerechtigkeit</option>
+                </select>
+
+                <button id="upload-btn" class="btn-send" disabled>An Drucker senden</button>
+            </div>
+
+            <div id="status-display" class="hidden">
+                <p>Deine ID: <strong id="user-id-display"></strong></p>
+                <p id="queue-info">Berechne Wartezeit...</p>
+            </div>
+        </main>
+    </div>
+    <script src="ap.js"></script>
+</body>
+</html>

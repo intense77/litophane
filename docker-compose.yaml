@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  litho-app:
+    build: .
+    ports: ["5000:5000"]
+    volumes:
+      - litho_outputs:/app/outputs
+    restart: always
+volumes:
+  litho_outputs:
+    driver: local
