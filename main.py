@@ -31,8 +31,11 @@ def generate():
         img = ImageOps.exif_transpose(img)
         img = img.convert('L')
         
-        # Bild exakt quadratisch zuschneiden, damit das Gesicht nicht verzerrt wird
-        img = ImageOps.fit(img, (100, 100), centering=(0.5, 0.5))
+        # NEU: Autokontrast maximiert den 3D-Effekt (Schwarz=maximale Höhe, Weiß=0mm)
+        img = ImageOps.autocontrast(img)
+        
+        # Zentrierung auf 0.2: Bei Hochformat-Fotos wird der Kopf behalten statt der Brust!
+        img = ImageOps.fit(img, (100, 100), centering=(0.5, 0.2))
         # Vertikal spiegeln, da OpenSCAD das Bild sonst auf dem Kopf einliest
         img = ImageOps.flip(img)
         img.save(img_path, format="PNG")

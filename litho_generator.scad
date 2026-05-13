@@ -4,8 +4,8 @@ text_id = "";
 
 // Lithophane Einstellungen - NUR DAS INLAY
 inlay_size = 42.0;       // Exakt 42mm (passt mit 0.4mm Spiel in den 42.4mm Schlitz)
-base_th = 0.6;           // Flache Trägerschicht für gute Druckbetthaftung
-thickness = 0.9;         // Reliefhöhe (0.6 + 0.9 = 1.5mm Gesamtdicke. Passt in den 1.6mm Schlitz!)
+base_th = 0.4;           // Reduziert auf 0.4mm, um mehr Tiefe fürs Bild zu gewinnen
+thickness = 1.1;         // Reliefhöhe auf 1.1mm erhöht für stärkere Kontraste! (0.4 + 1.1 = 1.5mm)
 
 // Da Python das Bild auf max 100px verkleinert: 100 * 0.42 = 42mm
 scale_xy = 0.42;
