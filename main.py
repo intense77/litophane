@@ -31,11 +31,12 @@ def generate():
         img = ImageOps.exif_transpose(img)
         img = img.convert('L')
         
-        # NEU: Autokontrast maximiert den 3D-Effekt (Schwarz=maximale Höhe, Weiß=0mm)
-        img = ImageOps.autocontrast(img)
+        # NEU: Histogramm-Ausgleich (Equalize) bringt extrem viele Details in Gesichtern zum Vorschein!
+        img = ImageOps.equalize(img)
         
-        # Zentrierung auf 0.2: Bei Hochformat-Fotos wird der Kopf behalten statt der Brust!
-        img = ImageOps.fit(img, (100, 100), centering=(0.5, 0.2))
+        # Auflösung auf 150x150 erhöhen (für mehr Details, ohne den Server zu crashen)
+        # Zentrierung 0.2 behält weiterhin den Kopf bei Hochformat-Fotos
+        img = ImageOps.fit(img, (150, 150), centering=(0.5, 0.2))
         # Vertikal spiegeln, da OpenSCAD das Bild sonst auf dem Kopf einliest
         img = ImageOps.flip(img)
         img.save(img_path, format="PNG")
