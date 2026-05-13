@@ -17,7 +17,9 @@ union() {
     cube([inlay_size, inlay_size, base_th]);
 
     // 2. Das eigentliche Lithophane (Bild-Relief)
-    translate([0, 0, base_th]) 
+    // Wir versenken das Relief 0.01mm in den Boden, um "Z-Fighting" zu verhindern.
+    // Ohne das denkt der Slicer oft, das Objekt sei hohl oder ein "Sandwich"!
+    translate([0, 0, base_th - 0.01]) 
     // WICHTIG: surface() generiert Höhen bis 100. Daher: thickness / 100
     scale([scale_xy, scale_xy, thickness / 100])
     // center=false sorgt dafür, dass das Relief exakt bei Z=0 startet und nur nach OBEN wächst.
@@ -27,7 +29,7 @@ union() {
     
     // 3. Die User-ID am oberen Rand (wird später vom Rahmen-Schlitz verdeckt)
     // Bei 42mm Inlay und 38mm Fenster verschwinden exakt 2mm Rand im Rahmen.
-    translate([0, inlay_size/2 - 1.5, base_th]) {
+    translate([0, inlay_size/2 - 1.5, base_th - 0.01]) {
         difference() {
             // Flacher Balken, der das unebene Bild-Relief am Rand überschreibt
             translate([0, 0, thickness / 2])
