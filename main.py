@@ -43,6 +43,10 @@ def generate():
         img = ImageOps.fit(img, (150, 150), centering=(0.5, 0.2))
         img = ImageOps.flip(img)
         
+        # WICHTIG: Equalize zwingt das Bild, die maximale Höhe (1.5mm) auch wirklich auszunutzen!
+        # Ohne diese Zeile ist das 3D-Relief dünner als eine Druckschicht und der Slicer radiert es weg.
+        img = ImageOps.equalize(img)
+        
         # Kontrast optimieren (extremes Schwarz/Weiß vermeiden für bessere Druckbarkeit)
         img = img.point(lambda p: max(5, min(p, 245))) # Dein genialer Fix!
         
