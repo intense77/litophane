@@ -13,33 +13,28 @@ max_height = 1.5;        // Maximale Gesamtdicke
 scale_xy = 41.8 / 150;
 
 union() {
-    // 1. Die garantierte Bodenplatte (verhindert Löcher und fliegende Strukturen!)
+    // 1. Die Bodenplatte (0.4mm dick) [cite: 2, 6]
     translate([-inlay_size/2, -inlay_size/2, 0])
     cube([inlay_size, inlay_size, base_th]);
 
-    // 2. Das eigentliche Lithophane
-    // Wir heben es um 0.01mm an. So teilen sich Boden und Bild nicht exakt Z=0.
-    // Das verhindert den "Deckel-Bug" in Bambu Studio zu 100% mathematisch korrekt.
-    translate([0, 0, 0.01])
-    scale([scale_xy, scale_xy, (max_height - 0.01) / 100])
-    // center=false sorgt dafür, dass das Relief exakt bei Z=0 startet und nur nach OBEN wächst.
-    // Da das Bild 150x150 px ist, zentrieren wir es manuell um die Hälfte (-75) auf X und Y.
-    translate([-75, -75, 0])
-    surface(file = image_file, center = false, invert = true);
-    
-    // 3. Die User-ID am oberen Rand
-    // Auch den Balken schieben wir minimal nach innen (1.55 statt 1.5),
-    // damit er keine gemeinsame Außenwand mit der Hinterkante der Bodenplatte hat.
-    translate([0, inlay_size/2 - 1.55, 0.2]) {
+    // 2. Das Lithophane [cite: 7]
+    // Wir lassen das Relief bei Z = 0.1 starten (0.3mm tief in der Bodenplatte versenkt)
+    // Das eliminiert den Deckel-Bug in Bambu Studio komplett.
+    translate([0, 0, 0.1]) 
+    scale([scale_xy, scale_xy, (max_height - 0.1) / 100]) [cite: 5, 9]
+    translate([-75, -75, 0]) [cite: 10]
+    surface(file = image_file, center = false, invert = true); [cite: 10]
+
+    // 3. Die User-ID [cite: 11]
+    translate([0, inlay_size/2 - 1.55, 0.1]) { [cite: 12]
         difference() {
-            // Flacher Balken, der das unebene Bild-Relief am Rand überschreibt
-            translate([0, 0, (max_height - 0.2) / 2])
-            cube([inlay_size - 4, 3, max_height - 0.2], center = true);
-            
-            // Die eingravierte ID (0.4mm tief von der Oberfläche)
-            translate([0, 0, max_height - 0.2 - 0.4])
+            translate([0, 0, (max_height - 0.1) / 2])
+            cube([inlay_size - 4, 3, max_height - 0.1], center = true); [cite: 12]
+
+            // Gravur
+            translate([0, 0, max_height - 0.1 - 0.4]) [cite: 13]
             linear_extrude(1) {
-                text(text_id, size=2.5, halign="center", valign="center");
+                text(text_id, size=2.5, halign="center", valign="center"); [cite: 13]
             }
         }
     }
