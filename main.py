@@ -34,6 +34,10 @@ def generate():
         # NEU: Histogramm-Ausgleich (Equalize) bringt extrem viele Details in Gesichtern zum Vorschein!
         img = ImageOps.equalize(img)
         
+        # BUGFIX: Verhindere rein weiße Pixel (255), da diese in OpenSCAD eine Höhe von 0.0 erzeugen!
+        # 0.0 Höhe erzeugt eine defekte 3D-Geometrie, was im Slicer den Deckel-Bug auslöst.
+        img = img.point(lambda p: min(p, 250))
+        
         # Auflösung auf 150x150 erhöhen (für mehr Details, ohne den Server zu crashen)
         # Zentrierung 0.2 behält weiterhin den Kopf bei Hochformat-Fotos
         img = ImageOps.fit(img, (150, 150), centering=(0.5, 0.2))
