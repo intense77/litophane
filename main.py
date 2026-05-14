@@ -47,8 +47,11 @@ def generate():
         # Ohne diese Zeile ist das 3D-Relief dünner als eine Druckschicht und der Slicer radiert es weg.
         img = ImageOps.equalize(img)
         
-        # Kontrast optimieren (extremes Schwarz/Weiß vermeiden für bessere Druckbarkeit)
-        img = img.point(lambda p: max(5, min(p, 245))) # Dein genialer Fix!
+        # WICHTIG: Das Relief startet nun bei Z=0. Die 0.4mm Bodenplatte "verschluckt" alles, was dünner ist.
+        # Wir müssen das Bild komprimieren: Das dunkelste Schwarz (0) bleibt 0 (= 1.5mm Höhe).
+        # Das hellste Weiß (255) wird auf 187 abgedunkelt. 187 ergibt in OpenSCAD exakt 0.4mm Höhe!
+        # Das "int()" ist extrem wichtig, damit keine Kommazahlen (Floats) Löcher im 3D-Modell verursachen.
+        img = img.point(lambda p: int((p / 255.0) * 187))
         
         img.save(img_path)
         print(f"[{user_id}] Bild verarbeitet und gespeichert.", flush=True)
