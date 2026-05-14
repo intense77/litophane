@@ -40,11 +40,6 @@ def generate():
         # Vertikal spiegeln, da OpenSCAD das Bild sonst auf dem Kopf einliest
         img = ImageOps.flip(img)
         
-        # NEU: Wir brennen die Bodenplatte (0.4mm) direkt in die Pixel ein!
-        # Das verhindert den "Slicer-Deckel-Bug" (Z-Fighting) zu 100%.
-        # Weiß (255) wird auf 187 abgedunkelt. Das ergibt in OpenSCAD exakt 0.4mm Höhe.
-        img = img.point(lambda p: p * (187 / 255.0))
-        
         img.save(img_path, format="PNG")
         print(f"[{user_id}] Bild für den 3D-Druck gespeichert.", flush=True)
     else:
