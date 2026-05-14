@@ -39,7 +39,7 @@ def generate():
         # In main.py
         # Begrenze die Werte auf einen Bereich von 5 bis 245
 #         Das stellt sicher, dass das Relief immer eine Mindestdicke behält
-        img = img.point(lambda p: max(5, min(p, 245))) [cite: 1]
+        img = img.point(lambda p: max(5, min(p, 245)))
         
         # Auflösung auf 150x150 erhöhen (für mehr Details, ohne den Server zu crashen)
         # Zentrierung 0.2 behält weiterhin den Kopf bei Hochformat-Fotos
