@@ -9,15 +9,19 @@ base_th = 0.4; // Massive Basisplatte
 scale_xy = inlay_size / 150;   
 
 union() {
-    // 1. Das Relief (Beinhaltet jetzt automatisch die Bodenplatte!)
-    // ACHTUNG: Die separate Bodenplatte wurde entfernt, da sie den "Deckel"-Bug im Slicer auslöst!
-    // Python sorgt dafür, dass dieses Relief überall ohnehin mindestens 0.4mm dick ist.
-    // Wir nutzen das Bild, das von Python absolut verlinkt wurde.
-    scale([scale_xy, scale_xy, max_height / 100])
+    // 1. Die echte Bodenplatte (garantiert zu 100% eine solide, löcherfreie Basis!)
+    translate([-inlay_size/2, -inlay_size/2, 0])
+    cube([inlay_size, inlay_size, base_th]);
+
+    // 2. Das Relief (sitzt auf der Bodenplatte)
+    // Wir starten bei Z=0.39 (0.01mm tief in der Bodenplatte versenkt, um perfekt zu verschmelzen)
+    // Dadurch gibt es keinen Sandwich-Bug mehr im Slicer!
+    translate([0, 0, base_th - 0.01])
+    scale([scale_xy, scale_xy, (max_height - base_th + 0.01) / 100])
     translate([-75, -75, 0])
     surface(file = image_file, center = false, invert = true);
 
-    // 3. User-ID Steg oben
+    // 3. User-ID Steg oben (startet ebenfalls massiv bei Z=0)
     translate([0, inlay_size/2 - 1.55, 0]) {
         difference() {
             translate([0, 0, max_height / 2])

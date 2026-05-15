@@ -52,11 +52,12 @@ def generate():
         img = ImageOps.equalize(img) # Kontrast-Spreizung
         img = img.filter(ImageFilter.GaussianBlur(radius=0.5)) # Glättung
         
-        # Mapping korrigiert: 
-        # OpenSCAD (invert=true) macht Schwarz (0) zur Maximalhöhe (1.5mm) und Weiß (255) zu 0mm.
-        # Damit Weiß auf exakt 0.4mm (Höhe der Bodenplatte) landet, muss es auf 187 abgedunkelt werden.
-        # Schwarz (0) muss 0 bleiben, damit es die vollen 1.5mm erreicht.
-        img = img.point(lambda p: int((p / 255.0) * 187))
+        # WICHTIG: Die Bodenplatte wird jetzt in OpenSCAD als echter massiver Block (Cube) erzeugt!
+        # Das Bild nutzt den vollen Kontrast (0=Schwarz, 255=Weiß).
+        # Weiß (255) wird in OpenSCAD zu 0mm Höhe, was unsichtbar in der Bodenplatte versinkt.
+        # Schwarz (0) wird in OpenSCAD zu 1.11mm Höhe, was perfekt aus der Platte herausragt.
+        # Keine künstliche Begrenzung mehr nötig -> Keine Löcher!
+        
         img.save(img_path)
 
         # 2. OpenSCAD Aufruf mit ABSOLUTEN Pfaden
