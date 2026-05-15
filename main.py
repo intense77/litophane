@@ -2,7 +2,7 @@ import os
 import subprocess
 import uuid
 from flask import Flask, request, jsonify, send_from_directory
-from PIL import Image, ImageOps, ImageFilter
+from PIL import Image, ImageOps, ImageFilter, ImageDraw
 
 app = Flask(__name__)
 
@@ -52,15 +52,16 @@ def generate():
         img = ImageOps.equalize(img) # Kontrast-Spreizung
         img = img.filter(ImageFilter.GaussianBlur(radius=0.5)) # Glättung
         
-        # Werte leicht kappen (1 bis 254), um absolut extreme Spitzen (0 und 100 in OpenSCAD) 
-        # zu vermeiden. Das schützt vor kaputten Geometrien an den Rändern.
-        img = img.point(lambda p: max(1, min(p, 254)))
+        # NEU: Das Slicer-Bug-Endgame!
+        # Wir brennen die Bodenplatte (0.4mm) und den Steg direkt in die Pixel ein.
+        # Weiß (255) wird 187 -> Ergibt in OpenSCAD exakt 0.4mm Basis-Höhe.
+        img = img.point(lambda p: int((p / 255.0) * 187))
         
-        # WICHTIG: Die Bodenplatte wird jetzt in OpenSCAD als echter massiver Block (Cube) erzeugt!
-        # Das Bild nutzt den vollen Kontrast (0=Schwarz, 255=Weiß).
-        # Weiß (255) wird in OpenSCAD zu 0mm Höhe, was unsichtbar in der Bodenplatte versinkt.
-        # Schwarz (0) wird in OpenSCAD zu 1.11mm Höhe, was perfekt aus der Platte herausragt.
-        # Keine künstliche Begrenzung mehr nötig -> Keine Löcher!
+        # Den massiven Steg für die User-ID als schwarzes Rechteck zeichnen.
+        # Da das Bild gespiegelt ist, liegt das Rechteck unten (Y=110 bis 120).
+        # Schwarz (0) erzeugt in OpenSCAD automatisch die volle Höhe von 1.5mm.
+        draw = ImageDraw.Draw(img)
+        draw.rectangle([0, 110, 120, 120], fill=0)
         
         img.save(img_path)
 
