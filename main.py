@@ -50,12 +50,12 @@ def generate():
         img = ImageOps.fit(img, (120, 120), centering=(0.5, 0.2)) # RAM sparen, aber detailreich bleiben!
         img = ImageOps.flip(img) # Spiegeln für OpenSCAD
         img = ImageOps.equalize(img) # Kontrast-Spreizung
-        img = img.filter(ImageFilter.GaussianBlur(radius=0.5)) # Glättung
+        img = img.filter(ImageFilter.GaussianBlur(radius=1.5)) # Stärkere Glättung gegen Drucker-Stottern!
         
-        # NEU: Das Slicer-Bug-Endgame!
-        # Wir brennen die Bodenplatte (0.4mm) und den Steg direkt in die Pixel ein.
-        # Weiß (255) wird 187 -> Ergibt in OpenSCAD exakt 0.4mm Basis-Höhe.
-        img = img.point(lambda p: int((p / 255.0) * 187))
+        # Wir erhöhen die Basisplatte auf 0.6mm! Das sind 5 robuste Druckschichten (bei 0.12mm)
+        # und verhindert, dass das Bauteil beim Drucken aufreißt.
+        # Mathematik: 153 ergibt in OpenSCAD (invert=true) bei 1.5mm Maximalhöhe exakt 0.6mm Basis.
+        img = img.point(lambda p: int((p / 255.0) * 153))
         
         # Den massiven Steg für die User-ID als schwarzes Rechteck zeichnen.
         # Da das Bild gespiegelt ist, liegt das Rechteck unten (Y=110 bis 120).
