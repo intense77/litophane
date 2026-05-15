@@ -2,7 +2,7 @@ import os
 import subprocess
 import uuid
 from flask import Flask, request, jsonify, send_from_directory
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageFilter
 
 # Konfiguriere Flask für statische Dateien
 app = Flask(__name__, static_url_path='', static_folder='static')
@@ -46,6 +46,11 @@ def generate():
         # WICHTIG: Equalize zwingt das Bild, die maximale Höhe (1.5mm) auch wirklich auszunutzen!
         # Ohne diese Zeile ist das 3D-Relief dünner als eine Druckschicht und der Slicer radiert es weg.
         img = ImageOps.equalize(img)
+        
+        # NEU: Ein leichter Weichzeichner glättet die Geometrie!
+        # 1 Pixel entspricht 0.28mm (kleiner als die 0.4mm Düse). Ohne Blur stottert der 
+        # Drucker bei harten Kontrasten, fördert kein Plastik und erzeugt physische Löcher.
+        img = img.filter(ImageFilter.GaussianBlur(radius=1))
         
         # WICHTIG: Das Relief startet nun bei Z=0. Die 0.4mm Bodenplatte "verschluckt" alles, was dünner ist.
         # Wir müssen das Bild komprimieren: Das dunkelste Schwarz (0) bleibt 0 (= 1.5mm Höhe).
