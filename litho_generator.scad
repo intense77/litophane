@@ -9,11 +9,9 @@ base_th = 0.4; // Massive Basisplatte
 scale_xy = inlay_size / 150;   
 
 union() {
-    // 1. Die Bodenplatte (Immer vorhanden)
-    translate([-inlay_size/2, -inlay_size/2, 0])
-    cube([inlay_size, inlay_size, base_th]);
-
-    // 2. Das Relief (Start bei Z=0 für perfekte Verschmelzung)
+    // 1. Das Relief (Beinhaltet jetzt automatisch die Bodenplatte!)
+    // ACHTUNG: Die separate Bodenplatte wurde entfernt, da sie den "Deckel"-Bug im Slicer auslöst!
+    // Python sorgt dafür, dass dieses Relief überall ohnehin mindestens 0.4mm dick ist.
     // Wir nutzen das Bild, das von Python absolut verlinkt wurde.
     scale([scale_xy, scale_xy, max_height / 100])
     translate([-75, -75, 0])
