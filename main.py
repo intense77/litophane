@@ -52,9 +52,11 @@ def generate():
         img = ImageOps.equalize(img) # Kontrast-Spreizung
         img = img.filter(ImageFilter.GaussianBlur(radius=0.5)) # Glättung
         
-        # Mapping: Sicherstellen, dass das Relief DEUTLICH über die 0.4mm Platte ragt
-        # Werte zwischen 40 (ca. 0.6mm) und 100 (1.5mm)
-        img = img.point(lambda p: int(100 - (p / 255.0) * 60))
+        # Mapping korrigiert: 
+        # OpenSCAD (invert=true) macht Schwarz (0) zur Maximalhöhe (1.5mm) und Weiß (255) zu 0mm.
+        # Damit Weiß auf exakt 0.4mm (Höhe der Bodenplatte) landet, muss es auf 187 abgedunkelt werden.
+        # Schwarz (0) muss 0 bleiben, damit es die vollen 1.5mm erreicht.
+        img = img.point(lambda p: int((p / 255.0) * 187))
         img.save(img_path)
 
         # 2. OpenSCAD Aufruf mit ABSOLUTEN Pfaden
