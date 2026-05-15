@@ -49,8 +49,14 @@ def generate():
         img = img.convert('L') # Graustufen
         img = ImageOps.fit(img, (120, 120), centering=(0.5, 0.2)) # RAM sparen, aber detailreich bleiben!
         img = ImageOps.flip(img) # Spiegeln für OpenSCAD
-        img = ImageOps.equalize(img) # Kontrast-Spreizung
-        img = img.filter(ImageFilter.GaussianBlur(radius=1.5)) # Stärkere Glättung gegen Drucker-Stottern!
+        
+        # Sanfterer Kontrast: Equalize war zu extrem und hat Rauschen zu Nadelspitzen gemacht.
+        # Autocontrast (ignoriert 2% Extremwerte) schont den Extruder!
+        img = ImageOps.autocontrast(img, cutoff=2) 
+        
+        # Sehr starke Glättung (Radius 3 = ca. 1mm). Bügelt die Nadelspitzen zu sanften Wellen.
+        # Das Filament reißt nicht mehr ab, der Steg bleibt stabil und es gibt keine Löcher!
+        img = img.filter(ImageFilter.GaussianBlur(radius=3)) 
         
         # Wir erhöhen die Basisplatte auf 0.6mm! Das sind 5 robuste Druckschichten (bei 0.12mm)
         # und verhindert, dass das Bauteil beim Drucken aufreißt.
