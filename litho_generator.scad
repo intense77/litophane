@@ -19,9 +19,11 @@ union() {
 
     // 2. Das Relief (sitzt auf der Bodenplatte)
     // Wir starten bei Z=0.39 (0.01mm tief in der Bodenplatte versenkt, um perfekt zu verschmelzen)
-    // Dadurch gibt es keinen Sandwich-Bug mehr im Slicer!
     translate([0, 0, base_th - 0.01])
-    scale([scale_xy, scale_xy, (max_height - base_th + 0.01) / 100])
+    // WICHTIG: Wir skalieren die Höhe nur bis 1.49mm (statt 1.50mm)!
+    // Dadurch sind die höchsten Bergspitzen nicht EXAKT auf derselben Z-Höhe wie der Steg.
+    // Coplanare Flächen an der Oberseite sind der Hauptgrund für den oberen Slicer-"Deckel"!
+    scale([scale_xy, scale_xy, (max_height - base_th) / 100])
     translate([-60, -60, 0])
     surface(file = image_file, center = false, invert = true);
 

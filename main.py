@@ -52,6 +52,10 @@ def generate():
         img = ImageOps.equalize(img) # Kontrast-Spreizung
         img = img.filter(ImageFilter.GaussianBlur(radius=0.5)) # Glättung
         
+        # Werte leicht kappen (1 bis 254), um absolut extreme Spitzen (0 und 100 in OpenSCAD) 
+        # zu vermeiden. Das schützt vor kaputten Geometrien an den Rändern.
+        img = img.point(lambda p: max(1, min(p, 254)))
+        
         # WICHTIG: Die Bodenplatte wird jetzt in OpenSCAD als echter massiver Block (Cube) erzeugt!
         # Das Bild nutzt den vollen Kontrast (0=Schwarz, 255=Weiß).
         # Weiß (255) wird in OpenSCAD zu 0mm Höhe, was unsichtbar in der Bodenplatte versinkt.
