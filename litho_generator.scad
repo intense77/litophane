@@ -14,7 +14,7 @@ union() {
     cube([inlay_size, inlay_size, base_th]);
 
     // 2. Das Relief (Start bei Z=0 für perfekte Verschmelzung)
-    // Die surface() Funktion nutzt das von Python vorbereitete Bild
+    // Wir nutzen das Bild, das von Python absolut verlinkt wurde.
     scale([scale_xy, scale_xy, max_height / 100])
     translate([-75, -75, 0])
     surface(file = image_file, center = false, invert = true);

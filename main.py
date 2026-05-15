@@ -6,7 +6,7 @@ from PIL import Image, ImageOps, ImageFilter
 
 app = Flask(__name__)
 
-# Absolute Pfade für die Docker-Umgebung
+# Absolute Pfade für die Docker-Umgebung (Coolify)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 OUTPUT_FOLDER = os.path.join(BASE_DIR, 'outputs')
@@ -37,51 +37,54 @@ def generate():
         user_id = request.form.get('id', 'ID-' + str(uuid.uuid4())[:4])
         val = request.form.get('value', 'Dia')
         
-        # Eindeutige Namen
+        # Eindeutige Namen generieren
         img_filename = f"img_{uuid.uuid4().hex}.png"
         img_path = os.path.join(UPLOAD_FOLDER, img_filename)
         stl_filename = f"{user_id}_{val}.stl"
         stl_path = os.path.join(OUTPUT_FOLDER, stl_filename)
 
-        # 1. Bildverarbeitung
+        # 1. Bildverarbeitung (Vorbereitung für Lithophane)
         img = Image.open(file.stream)
-        img = ImageOps.exif_transpose(img)
-        img = img.convert('L')
-        img = ImageOps.fit(img, (150, 150), centering=(0.5, 0.2))
-        img = ImageOps.flip(img)
-        img = ImageOps.equalize(img)
-        img = img.filter(ImageFilter.GaussianBlur(radius=0.5))
+        img = ImageOps.exif_transpose(img) # Handy-Rotation korrigieren
+        img = img.convert('L') # Graustufen
+        img = ImageOps.fit(img, (150, 150), centering=(0.5, 0.2)) # Zuschnitt
+        img = ImageOps.flip(img) # Spiegeln für OpenSCAD
+        img = ImageOps.equalize(img) # Kontrast-Spreizung
+        img = img.filter(ImageFilter.GaussianBlur(radius=0.5)) # Glättung
         
         # Mapping: Sicherstellen, dass das Relief DEUTLICH über die 0.4mm Platte ragt
-        # Werte zwischen 35 (ca. 0.52mm) und 100 (1.5mm)
-        img = img.point(lambda p: int(100 - (p / 255.0) * 65))
+        # Werte zwischen 40 (ca. 0.6mm) und 100 (1.5mm)
+        img = img.point(lambda p: int(100 - (p / 255.0) * 60))
         img.save(img_path)
 
-        # 2. OpenSCAD Aufruf mit absoluten Pfaden
-        # Wir erzwingen absolute Pfade, damit surface() das Bild sicher findet
+        # 2. OpenSCAD Aufruf mit ABSOLUTEN Pfaden
+        # Das ist entscheidend, damit surface() die Datei findet.
         abs_img_path = os.path.abspath(img_path)
+        abs_scad_path = os.path.abspath(SCAD_FILE)
+        abs_stl_path = os.path.abspath(stl_path)
         
         cmd = [
-            "openscad", "-o", stl_path,
+            "openscad", "-o", abs_stl_path,
             "-D", f'image_file="{abs_img_path}"',
             "-D", f'text_id="{user_id}"',
-            SCAD_FILE
+            abs_scad_path
         ]
 
-        # Rendering
+        # Rendering starten (Timeout 60s)
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
 
         if result.returncode != 0:
-            print(f"OpenSCAD Error: {result.stderr}")
+            print(f"OpenSCAD Error: {result.stderr}", flush=True)
             return jsonify({"error": "Rendering failed", "details": result.stderr}), 500
 
+        print(f"Erfolgreich generiert: {stl_filename}", flush=True)
         return jsonify({"id": user_id, "status": "Fertig", "file": stl_filename})
 
     except Exception as e:
-        print(f"Python Error: {str(e)}")
+        print(f"Python Error: {str(e)}", flush=True)
         return jsonify({"error": str(e)}), 500
-    # Finally-Block: Wir löschen das Bild vorerst NICHT, um Fehler auszuschließen
     finally:
+        # WICHTIG: Bild vorerst NICHT löschen, um Race-Conditions zu vermeiden
         pass
 
 @app.route('/outputs/<path:filename>')
