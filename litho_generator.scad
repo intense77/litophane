@@ -6,7 +6,11 @@ text_id = "";
 inlay_size = 42.0;
 max_height = 1.5;       
 base_th = 0.4; // Massive Basisplatte
-scale_xy = inlay_size / 150;   
+
+// WICHTIG: Das Relief muss minimal kleiner sein als die 42mm Bodenplatte!
+// Wir nehmen 41.8mm. Teilen sich beide Objekte die exakt selbe Außenwand,
+// erzeugt OpenSCAD kaputte Geometrien, die der Slicer als "flache Platte" flickt.
+scale_xy = 41.8 / 150;   
 
 union() {
     // 1. Die echte Bodenplatte (garantiert zu 100% eine solide, löcherfreie Basis!)
