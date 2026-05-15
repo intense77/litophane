@@ -10,7 +10,7 @@ base_th = 0.4; // Massive Basisplatte
 // WICHTIG: Das Relief muss minimal kleiner sein als die 42mm Bodenplatte!
 // Wir nehmen 41.8mm. Teilen sich beide Objekte die exakt selbe Außenwand,
 // erzeugt OpenSCAD kaputte Geometrien, die der Slicer als "flache Platte" flickt.
-scale_xy = 41.8 / 150;   
+scale_xy = 41.8 / 120;   
 
 union() {
     // 1. Die echte Bodenplatte (garantiert zu 100% eine solide, löcherfreie Basis!)
@@ -22,7 +22,7 @@ union() {
     // Dadurch gibt es keinen Sandwich-Bug mehr im Slicer!
     translate([0, 0, base_th - 0.01])
     scale([scale_xy, scale_xy, (max_height - base_th + 0.01) / 100])
-    translate([-75, -75, 0])
+    translate([-60, -60, 0])
     surface(file = image_file, center = false, invert = true);
 
     // 3. User-ID Steg oben (startet ebenfalls massiv bei Z=0)

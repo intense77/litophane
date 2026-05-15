@@ -47,7 +47,7 @@ def generate():
         img = Image.open(file.stream)
         img = ImageOps.exif_transpose(img) # Handy-Rotation korrigieren
         img = img.convert('L') # Graustufen
-        img = ImageOps.fit(img, (150, 150), centering=(0.5, 0.2)) # Zuschnitt
+        img = ImageOps.fit(img, (120, 120), centering=(0.5, 0.2)) # RAM sparen, aber detailreich bleiben!
         img = ImageOps.flip(img) # Spiegeln für OpenSCAD
         img = ImageOps.equalize(img) # Kontrast-Spreizung
         img = img.filter(ImageFilter.GaussianBlur(radius=0.5)) # Glättung
@@ -87,8 +87,8 @@ def generate():
         print(f"Python Error: {str(e)}", flush=True)
         return jsonify({"error": str(e)}), 500
     finally:
-        # WICHTIG: Bild vorerst NICHT löschen, um Race-Conditions zu vermeiden
-        pass
+        # Speicherplatz auf dem Netcup Server freigeben!
+        if img_path and os.path.exists(img_path): os.remove(img_path)
 
 @app.route('/outputs/<path:filename>')
 def download(filename):

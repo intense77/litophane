@@ -16,5 +16,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Gunicorn verwenden, um die Flask-App produktionsreif zu starten
-# Timeout auf 120 Sekunden, falls OpenSCAD mal länger rendert
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "120", "--workers", "2", "main:app"]
+# Timeout auf 120 Sekunden, Worker auf 1 reduzieren, um RAM-Abstürze (OOM) zu verhindern!
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "120", "--workers", "1", "main:app"]
